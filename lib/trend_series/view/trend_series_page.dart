@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class TrendsSeriesPage extends StatelessWidget {
-  const TrendsSeriesPage({Key? key}) : super(key: key);
+class TrendSeriesPage extends StatelessWidget {
+  const TrendSeriesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

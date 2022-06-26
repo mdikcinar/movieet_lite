@@ -18,7 +18,7 @@ void main() async {
         supportedLocales: [
           Locale('en', 'US'),
         ],
-        path: AppConstants.translatesPath.path,
+        path: AppConstants.translatesPath.value,
         fallbackLocale: Locale('en', 'US'),
         child: const App(),
       ),

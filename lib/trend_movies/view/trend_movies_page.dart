@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../0-core/init/navigation/navigation_service.dart';
 
-class TrendsMoviesPage extends StatelessWidget {
-  const TrendsMoviesPage({Key? key}) : super(key: key);
+class TrendMoviesPage extends StatelessWidget {
+  const TrendMoviesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

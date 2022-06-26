@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'base_navigation_service.dart';
 
-class NavigationService implements BaseNavigationService {
+class NavigationService implements INavigationService {
   static final NavigationService _instance = NavigationService._init();
   static NavigationService get instance => _instance;
 

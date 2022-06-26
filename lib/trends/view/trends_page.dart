@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../trends_movies/trend_movies.dart';
-import '../../trends_series/view/trends_series_page.dart';
+import '../../trend_movies/trend_movies.dart';
+import '../../trend_series/trend_movies.dart';
 import '../constants/trends_view_enum.dart';
 import '../cubit/trends_cubit.dart';
 
@@ -33,7 +33,7 @@ class TrendsPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                Expanded(child: state == TrendsView.movies ? const TrendsMoviesPage() : const TrendsSeriesPage()),
+                Expanded(child: state == TrendsView.movies ? const TrendMoviesPage() : const TrendSeriesPage()),
               ],
             );
           },
