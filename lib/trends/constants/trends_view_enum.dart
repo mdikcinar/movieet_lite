@@ -1,0 +1,1 @@
+enum TrendsView { movies, serries }
