@@ -6,3 +6,5 @@ abstract class TrendMoviesEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class TrendMoviesFetched extends TrendMoviesEvent {}

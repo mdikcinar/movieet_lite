@@ -5,7 +5,7 @@ extension _CoreDioOperations on CoreDio {
     if (data is List) {
       return data.map((e) => model.fromJson(e)).toList().cast<T>() as R;
     } else if (data is Map) {
-      return model.fromJson(data as Map<String, Object>) as R;
+      return model.fromJson(data as Map<String, dynamic>) as R;
     }
     return data as R?;
   }

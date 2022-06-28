@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '0-core/constants/app_constants.dart';
@@ -8,6 +9,7 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await SentryFlutter.init(
     (options) {
       options.dsn = 'https://example@sentry.io/add-your-dsn-here';

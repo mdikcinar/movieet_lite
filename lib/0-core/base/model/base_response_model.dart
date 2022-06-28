@@ -7,7 +7,7 @@ abstract class IResponseModel<T> {
 
 class ResponseModel<T> extends IResponseModel<T> {
   ResponseModel({T? data, IErrorModel? error}) {
-    data = this.data;
-    error = this.error;
+    this.data = data;
+    this.error = error;
   }
 }
