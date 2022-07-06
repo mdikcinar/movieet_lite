@@ -1,15 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:movieetlite/src/app.dart';
+import 'package:movieetlite/src/utils/constants/app_constants.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-
-import '0-core/constants/app_constants.dart';
-import 'app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  await dotenv.load();
   await SentryFlutter.init(
     (options) {
       options.dsn = 'https://example@sentry.io/add-your-dsn-here';
@@ -17,11 +16,11 @@ void main() async {
     // Init your App.
     appRunner: () => runApp(
       EasyLocalization(
-        supportedLocales: [
+        supportedLocales: const [
           Locale('en', 'US'),
         ],
         path: AppConstants.translatesPath.value,
-        fallbackLocale: Locale('en', 'US'),
+        fallbackLocale: const Locale('en', 'US'),
         child: const App(),
       ),
     ),
