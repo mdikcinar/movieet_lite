@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movieetlite/src/core/base/view/route_not_found_page.dart';
-import 'package:movieetlite/src/details/view/details_page.dart';
 import 'package:movieetlite/src/features/dashboard/dashboard.dart';
+import 'package:movieetlite/src/features/details/view/details_page.dart';
 import 'package:movieetlite/src/utils/routing/app_routes.dart';
 
 class NavigationRoute {
