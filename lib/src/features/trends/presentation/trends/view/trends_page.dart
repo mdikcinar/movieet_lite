@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieetlite/src/core/extensions/context_extension.dart';
 import 'package:movieetlite/src/features/trends/data/trends_service.dart';
-import 'package:movieetlite/src/features/trends/presentation/trend_movies/bloc/trend_movies_bloc.dart';
-import 'package:movieetlite/src/features/trends/presentation/trend_movies/view/trend_movies_page.dart';
-import 'package:movieetlite/src/features/trends/presentation/trend_series/trend_movies.dart';
+import 'package:movieetlite/src/features/trends/presentation/trend_movies/trend_movies.dart';
+import 'package:movieetlite/src/features/trends/presentation/trend_series/trend_series.dart';
 import 'package:movieetlite/src/features/trends/presentation/trends/cubit/trends_cubit.dart';
 import 'package:movieetlite/src/features/trends/presentation/trends/trends.dart';
 
@@ -19,6 +18,7 @@ class TrendsPage extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => TrendsCubit()),
         BlocProvider(create: (context) => TrendMoviesBloc(_trendsService)..add(TrendMoviesFetched())),
+        BlocProvider(create: (context) => TrendSeriesBloc(_trendsService)),
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -43,12 +43,16 @@ class TrendsPage extends StatelessWidget {
                     CategoryNameButton(
                       isSelected: state == TrendsView.serries,
                       text: 'Series',
-                      onTap: () => context.read<TrendsCubit>().changeTrendsView(TrendsView.serries),
+                      onTap: () {
+                        context.read<TrendsCubit>().changeTrendsView(TrendsView.serries);
+                        final trendSeriesBloc = context.read<TrendSeriesBloc>();
+                        if (trendSeriesBloc.state.trendSeries.isEmpty) trendSeriesBloc.add(TrendSeriesFetched());
+                      },
                     ),
                   ],
                 ),
                 SizedBox(height: context.normalPadding),
-                Expanded(child: state == TrendsView.movies ? const TrendMoviesPage() : const TrendSeriesPage()),
+                Expanded(child: state == TrendsView.movies ? const TrendMoviesList() : const TrendSeriesList()),
               ],
             );
           },

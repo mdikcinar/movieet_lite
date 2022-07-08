@@ -5,8 +5,9 @@ import 'package:movieetlite/src/features/trends/presentation/trend_movies/bloc/t
 import 'package:movieetlite/src/utils/widgets/trend_card.dart';
 
 class TrendList extends StatefulWidget {
-  const TrendList({super.key, required this.trendList});
+  const TrendList({super.key, required this.trendList, required this.onBottom});
   final List<Trend> trendList;
+  final VoidCallback onBottom;
   @override
   State<TrendList> createState() => _TrendListState();
 }
@@ -44,7 +45,7 @@ class _TrendListState extends State<TrendList> {
   }
 
   void _onScroll() {
-    if (_isBottom) context.read<TrendMoviesBloc>().add(TrendMoviesFetched());
+    if (_isBottom) widget.onBottom();
   }
 
   bool get _isBottom {
