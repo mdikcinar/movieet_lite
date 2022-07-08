@@ -32,11 +32,12 @@ class TrendSeriesBloc extends Bloc<TrendSeriesEvent, TrendSeriesState> {
   int _page = 1;
 
   Future<void> _onTrendSeriesFetched(TrendSeriesFetched event, Emitter<TrendSeriesState> emit) async {
+    if (state.isMaxLimitReached) return;
     try {
       if (state.trendSeries.isNotEmpty) emit(state.copyWith(status: TrendSeriesStatus.loading));
       final paginatedData = await _fetchTrendSeries();
       final trendSeries = paginatedData?.results;
-      if (trendSeries == null && trendSeries!.isEmpty) {
+      if (trendSeries == null || trendSeries.isEmpty) {
         emit(
           state.copyWith(
             isMaxLimitReached: true,
@@ -49,6 +50,7 @@ class TrendSeriesBloc extends Bloc<TrendSeriesEvent, TrendSeriesState> {
           state.copyWith(
             status: TrendSeriesStatus.fetched,
             trendSeries: List.of(state.trendSeries)..addAll(trendSeries),
+            page: _page,
           ),
         );
       }

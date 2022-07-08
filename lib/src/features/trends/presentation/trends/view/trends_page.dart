@@ -29,22 +29,22 @@ class TrendsPage extends StatelessWidget {
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: BlocBuilder<TrendsCubit, TrendsView>(
+        body: BlocBuilder<TrendsCubit, TrendsState>(
           builder: (context, state) {
             return Column(
               children: [
                 Row(
                   children: [
                     CategoryNameButton(
-                      isSelected: state == TrendsView.movies,
+                      isSelected: state == TrendsState.movies,
                       text: 'Movies',
-                      onTap: () => context.read<TrendsCubit>().changeTrendsView(TrendsView.movies),
+                      onTap: () => context.read<TrendsCubit>().changeTrendsState(TrendsState.movies),
                     ),
                     CategoryNameButton(
-                      isSelected: state == TrendsView.serries,
+                      isSelected: state == TrendsState.serries,
                       text: 'Series',
                       onTap: () {
-                        context.read<TrendsCubit>().changeTrendsView(TrendsView.serries);
+                        context.read<TrendsCubit>().changeTrendsState(TrendsState.serries);
                         final trendSeriesBloc = context.read<TrendSeriesBloc>();
                         if (trendSeriesBloc.state.trendSeries.isEmpty) trendSeriesBloc.add(TrendSeriesFetched());
                       },
@@ -52,7 +52,7 @@ class TrendsPage extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: context.normalPadding),
-                Expanded(child: state == TrendsView.movies ? const TrendMoviesList() : const TrendSeriesList()),
+                Expanded(child: state == TrendsState.movies ? const TrendMoviesList() : const TrendSeriesList()),
               ],
             );
           },

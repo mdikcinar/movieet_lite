@@ -1,8 +1,9 @@
 import 'package:bloc/bloc.dart';
-import 'package:movieetlite/src/features/trends/presentation/trends/trends.dart';
 
-class TrendsCubit extends Cubit<TrendsView> {
-  TrendsCubit() : super(TrendsView.movies);
+enum TrendsState { movies, serries }
 
-  void changeTrendsView(TrendsView value) => emit(value);
+class TrendsCubit extends Cubit<TrendsState> {
+  TrendsCubit() : super(TrendsState.movies);
+
+  void changeTrendsState(TrendsState value) => emit(value);
 }

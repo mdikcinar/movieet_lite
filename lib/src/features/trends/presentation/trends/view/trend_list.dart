@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieetlite/src/features/trends/domain/trend.dart';
-import 'package:movieetlite/src/features/trends/presentation/trend_movies/bloc/trend_movies_bloc.dart';
 import 'package:movieetlite/src/utils/widgets/trend_card.dart';
 
 class TrendList extends StatefulWidget {

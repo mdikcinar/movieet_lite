@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:movieetlite/src/features/trends/data/trends_service.dart';
 import 'package:movieetlite/src/features/trends/domain/trend.dart';
@@ -32,11 +33,12 @@ class TrendMoviesBloc extends Bloc<TrendMoviesEvent, TrendMoviesState> {
   int _page = 1;
 
   Future<void> _onTrendMoviesFetched(TrendMoviesFetched event, Emitter<TrendMoviesState> emit) async {
+    if (state.isMaxLimitReached) return;
     try {
       if (state.trendMovies.isNotEmpty) emit(state.copyWith(status: TrendMovieStatus.loading));
       final paginatedData = await _fetchTrendMovies();
       final trendMovies = paginatedData?.results;
-      if (trendMovies == null && trendMovies!.isEmpty) {
+      if (trendMovies == null || trendMovies.isEmpty) {
         emit(
           state.copyWith(
             isMaxLimitReached: true,
@@ -49,6 +51,7 @@ class TrendMoviesBloc extends Bloc<TrendMoviesEvent, TrendMoviesState> {
           state.copyWith(
             status: TrendMovieStatus.fetched,
             trendMovies: List.of(state.trendMovies)..addAll(trendMovies),
+            page: _page,
           ),
         );
       }
