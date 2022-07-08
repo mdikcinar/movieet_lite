@@ -1,9 +1,13 @@
 import 'package:movieetlite/src/core/exceptions/chopper_exceptions.dart';
+import 'package:movieetlite/src/features/trends/domain/trend.dart';
+import 'package:movieetlite/src/utils/domain/paginated_data.dart';
 
 typedef JsonFactory<T> = T Function(Map<String, dynamic> json);
 
 class JsonTypeParser {
-  static const Map<Type, JsonFactory> factories = {};
+  static const Map<Type, JsonFactory> factories = {
+    PaginatedData<Trend>: PaginatedData<Trend>.fromJson,
+  };
 
   static dynamic decode<T>(dynamic entity) {
     if (entity is Iterable) return _decodeList<T>(entity);

@@ -20,7 +20,7 @@ class _$TrendsService extends TrendsService {
   Future<Response<PaginatedData<Trend>>> getTrends(
       MediaType mediaType, TimeWindow timeWindow,
       {int? page, String? language, required String? apiKey}) {
-    final $url = '/trending/{media_type}/{time_window}';
+    final $url = '/trending/${mediaType}/${timeWindow}';
     final $params = <String, dynamic>{
       'page': page,
       'language': language,

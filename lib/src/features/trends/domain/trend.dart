@@ -34,8 +34,8 @@ class Trend extends Equatable with BaseModel<Trend> {
 
   factory Trend.fromJson(Map<String, dynamic> json) => _$TrendFromJson(json);
   final bool? adult;
-  @JsonKey(name: 'backdrop_path')
   final int? gender;
+  @JsonKey(name: 'backdrop_path')
   final String? backdropPath;
   @JsonKey(name: 'genre_ids')
   final List<int>? genreIds;

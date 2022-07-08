@@ -12,7 +12,7 @@ import 'package:stream_transform/stream_transform.dart';
 part 'trend_movies_event.dart';
 part 'trend_movies_state.dart';
 
-const throttleDuration = Duration(milliseconds: 500);
+const throttleDuration = Duration(milliseconds: 200);
 
 EventTransformer<E> throttleDroppable<E>(Duration duration) {
   return (events, mapper) {
@@ -24,41 +24,46 @@ class TrendMoviesBloc extends Bloc<TrendMoviesEvent, TrendMoviesState> {
   TrendMoviesBloc(this._trendsService) : super(const TrendMoviesState()) {
     on<TrendMoviesFetched>(
       _onTrendMoviesFetched,
-      //transformer: throttleDroppable(throttleDuration),
+      transformer: throttleDroppable(throttleDuration),
     );
   }
 
   final TrendsService _trendsService;
+  int _page = 1;
 
   Future<void> _onTrendMoviesFetched(TrendMoviesFetched event, Emitter<TrendMoviesState> emit) async {
     try {
-      if (state.trendMovies.isNotEmpty) emit(state.copyWith(status: TrendMoviesStatus.loading));
+      if (state.trendMovies.isNotEmpty) emit(state.copyWith(status: TrendMovieStatus.loading));
       final paginatedData = await _fetchTrendMovies();
       final trendMovies = paginatedData?.results;
-      trendMovies == null && trendMovies!.isEmpty
-          ? emit(
-              state.copyWith(
-                isMaxLimitReached: true,
-                status: TrendMoviesStatus.fetched,
-              ),
-            )
-          : emit(
-              state.copyWith(
-                status: TrendMoviesStatus.fetched,
-                trendMovies: List.of(state.trendMovies)..addAll(trendMovies),
-              ),
-            );
+      if (trendMovies == null && trendMovies!.isEmpty) {
+        emit(
+          state.copyWith(
+            isMaxLimitReached: true,
+            status: TrendMovieStatus.fetched,
+          ),
+        );
+      } else {
+        _page++;
+        emit(
+          state.copyWith(
+            status: TrendMovieStatus.fetched,
+            trendMovies: List.of(state.trendMovies)..addAll(trendMovies),
+          ),
+        );
+      }
     } catch (exception, stackTrace) {
-      emit(state.copyWith(status: TrendMoviesStatus.failure));
+      emit(state.copyWith(status: TrendMovieStatus.failure));
       await Sentry.captureException(exception, stackTrace: stackTrace);
     }
   }
 
-  Future<PaginatedData<Trend>?> _fetchTrendMovies({int page = 1, String language = 'en', bool isWeek = true}) async {
+  Future<PaginatedData<Trend>?> _fetchTrendMovies({String language = 'en'}) async {
     final result = await _trendsService.getTrends(
       MediaType.movie,
       TimeWindow.week,
       apiKey: dotenv.env['API-KEY'],
+      page: _page,
     );
     return result.body;
   }

@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../constants/dashboard_view_enum.dart';
+enum DashboardView { trends, search, profile }
 
 class DashboardCubit extends Cubit<DashboardView> {
   DashboardCubit() : super(DashboardView.trends);

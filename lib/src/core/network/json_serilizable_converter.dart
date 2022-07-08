@@ -10,7 +10,7 @@ class JsonSerializableConverter extends JsonConverter {
       return jsonRes.copyWith(body: null);
     }
     final dynamic body = jsonRes.body;
-    final dynamic decodedItem = JsonTypeParser.decode<Item>(body);
+    final dynamic decodedItem = JsonTypeParser.decode<ResultType>(body);
     return jsonRes.copyWith<ResultType>(body: decodedItem as ResultType);
   }
 

@@ -17,8 +17,17 @@ class PaginatedData<T> extends BaseModel<PaginatedData<T>> {
   int? page;
   int? totalPages;
   int? totalResults;
-  @_Converter<T>()
+  @_Converter()
   List<T>? results;
+
+  PaginatedData<R> copyWith<R>({List<R>? results}) {
+    return PaginatedData<R>(
+      page: page,
+      totalPages: totalPages,
+      totalResults: totalResults,
+      results: results,
+    );
+  }
 
   @override
   PaginatedData<T> fromJson(Map<String, dynamic> json) {

@@ -1,21 +1,21 @@
 part of 'trend_movies_bloc.dart';
 
-enum TrendMoviesStatus { initial, loading, fetched, failure }
+enum TrendMovieStatus { initial, loading, fetched, failure }
 
 class TrendMoviesState extends Equatable {
   const TrendMoviesState({
-    this.status = TrendMoviesStatus.initial,
+    this.status = TrendMovieStatus.initial,
     this.trendMovies = const <Trend>[],
     this.page = 1,
     this.isMaxLimitReached = false,
   });
-  final TrendMoviesStatus status;
+  final TrendMovieStatus status;
   final List<Trend> trendMovies;
   final int page;
   final bool isMaxLimitReached;
 
   TrendMoviesState copyWith({
-    TrendMoviesStatus? status,
+    TrendMovieStatus? status,
     List<Trend>? trendMovies,
     int? page,
     bool? isMaxLimitReached,

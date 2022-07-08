@@ -1,9 +1,10 @@
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieetlite/src/features/dashboard/cubit/dashboard_cubit.dart';
-import 'package:movieetlite/src/features/dashboard/dashboard.dart';
 import 'package:movieetlite/src/features/profile/presentation/profile/view/profile_page.dart';
 import 'package:movieetlite/src/features/search/presentation/search/view/search_page.dart';
+import 'package:movieetlite/src/features/trends/data/trends_service.dart';
 import 'package:movieetlite/src/features/trends/presentation/trends/trends.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -19,7 +20,7 @@ class DashboardPage extends StatelessWidget {
           builder: (context, state) {
             switch (state) {
               case DashboardView.trends:
-                return const TrendsPage();
+                return TrendsPage(context.read<ChopperClient>().getService<TrendsService>());
               case DashboardView.search:
                 return const SearchPage();
               case DashboardView.profile:

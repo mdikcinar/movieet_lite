@@ -1,20 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../trend_movies/trend_movies.dart';
-import '../../trend_series/trend_movies.dart';
-import '../constants/trends_view_enum.dart';
-import '../cubit/trends_cubit.dart';
+import 'package:movieetlite/src/core/extensions/context_extension.dart';
+import 'package:movieetlite/src/features/trends/data/trends_service.dart';
+import 'package:movieetlite/src/features/trends/presentation/trend_movies/bloc/trend_movies_bloc.dart';
+import 'package:movieetlite/src/features/trends/presentation/trend_movies/view/trend_movies_page.dart';
+import 'package:movieetlite/src/features/trends/presentation/trend_series/trend_movies.dart';
+import 'package:movieetlite/src/features/trends/presentation/trends/cubit/trends_cubit.dart';
+import 'package:movieetlite/src/features/trends/presentation/trends/trends.dart';
 
 class TrendsPage extends StatelessWidget {
-  const TrendsPage({Key? key}) : super(key: key);
+  const TrendsPage(this._trendsService, {super.key});
+
+  final TrendsService _trendsService;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<TrendsCubit>(
-      create: (context) => TrendsCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => TrendsCubit()),
+        BlocProvider(create: (context) => TrendMoviesBloc(_trendsService)..add(TrendMoviesFetched())),
+      ],
       child: Scaffold(
-        appBar: AppBar(title: Text('Movieet Lite'), backgroundColor: Colors.transparent, elevation: 0),
+        appBar: AppBar(
+          title: Text(
+            'Movieet Lite',
+            style: TextStyle(fontFamily: 'Fuggles', fontSize: context.height * 0.05),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
         body: BlocBuilder<TrendsCubit, TrendsView>(
           builder: (context, state) {
             return Column(
@@ -33,6 +47,7 @@ class TrendsPage extends StatelessWidget {
                     ),
                   ],
                 ),
+                SizedBox(height: context.normalPadding),
                 Expanded(child: state == TrendsView.movies ? const TrendMoviesPage() : const TrendSeriesPage()),
               ],
             );

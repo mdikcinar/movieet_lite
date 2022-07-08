@@ -7,7 +7,7 @@ part 'trends_service.chopper.dart';
 
 @ChopperApi()
 abstract class TrendsService extends ChopperService {
-  @Get(path: '/trending/{media_type}/{time_window}')
+  @Get(path: '/trending/{mediaType}/{timeWindow}')
   Future<Response<PaginatedData<Trend>>> getTrends(
     @Path() MediaType mediaType,
     @Path() TimeWindow timeWindow, {

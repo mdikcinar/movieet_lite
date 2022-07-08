@@ -8,8 +8,8 @@ part of 'trend.dart';
 
 Trend _$TrendFromJson(Map<String, dynamic> json) => Trend(
       adult: json['adult'] as bool?,
-      gender: json['backdrop_path'] as int?,
-      backdropPath: json['backdropPath'] as String?,
+      gender: json['gender'] as int?,
+      backdropPath: json['backdrop_path'] as String?,
       genreIds:
           (json['genre_ids'] as List<dynamic>?)?.map((e) => e as int).toList(),
       id: json['id'] as int?,
@@ -39,8 +39,8 @@ Trend _$TrendFromJson(Map<String, dynamic> json) => Trend(
 
 Map<String, dynamic> _$TrendToJson(Trend instance) => <String, dynamic>{
       'adult': instance.adult,
-      'backdrop_path': instance.gender,
-      'backdropPath': instance.backdropPath,
+      'gender': instance.gender,
+      'backdrop_path': instance.backdropPath,
       'genre_ids': instance.genreIds,
       'id': instance.id,
       'known_for_department': instance.knownForDepartment,
