@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:movieetlite/src/app.dart';
 import 'package:movieetlite/src/core/bloc/bloc_observer.dart';
 import 'package:movieetlite/src/core/network/chopper_client.dart';
-import 'package:movieetlite/src/features/trends/data/trends_service.dart';
+import 'package:movieetlite/src/features/trends/data/service/trends_service.dart';
 import 'package:movieetlite/src/utils/constants/app_constants.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 

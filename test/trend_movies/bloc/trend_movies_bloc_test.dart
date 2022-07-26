@@ -1,26 +1,21 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:chopper/chopper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:movieetlite/src/core/network/chopper_client.dart';
-import 'package:movieetlite/src/features/trends/data/trends_service.dart';
+import 'package:movieetlite/src/features/trends/data/repository/base_trends_repository.dart';
 import 'package:movieetlite/src/features/trends/domain/trend.dart';
 import 'package:movieetlite/src/features/trends/presentation/trend_movies/bloc/trend_movies_bloc.dart';
 import 'package:movieetlite/src/utils/constants/enums.dart';
 
-class MockTrendsService extends Mock implements TrendsService {}
+class MockITrendsRepository extends Mock implements ITrendsRepository {}
 
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
-  late TrendsService trendsService;
-  late ChopperClient chopperClient;
+  late ITrendsRepository trendsRepository;
 
   setUp(() {
-    trendsService = MockTrendsService();
+    trendsRepository = MockITrendsRepository();
   });
 
   setUpAll(() {
@@ -30,14 +25,14 @@ void main() async {
 
   group('Trend Movies Bloc', () {
     test('initial state is TrendMoviesState', () {
-      expect(TrendMoviesBloc(trendsService).state, const TrendMoviesState());
+      expect(TrendMoviesBloc(trendsRepository).state, const TrendMoviesState());
     });
     blocTest<TrendMoviesBloc, TrendMoviesState>(
       'emits failure when get exception',
       setUp: () {
-        when(() => trendsService.getTrends(any(), any(), apiKey: '')).thenThrow(Exception());
+        when(() => trendsRepository.fetchTrendMovies(page: 1)).thenThrow(Exception());
       },
-      build: () => TrendMoviesBloc(trendsService),
+      build: () => TrendMoviesBloc(trendsRepository),
       act: (bloc) => bloc.add(TrendMoviesFetched()),
       seed: () => const TrendMoviesState(),
       expect: () => <TrendMoviesState>[
@@ -47,14 +42,14 @@ void main() async {
 
     blocTest<TrendMoviesBloc, TrendMoviesState>(
       'emits nothing when reached maximum limit',
-      build: () => TrendMoviesBloc(trendsService),
+      build: () => TrendMoviesBloc(trendsRepository),
       seed: () => const TrendMoviesState(isMaxLimitReached: true),
       act: (bloc) => bloc.add(TrendMoviesFetched()),
       expect: () => <TrendMoviesState>[],
     );
     blocTest<TrendMoviesBloc, TrendMoviesState>(
       'emits loading when fetching additional data',
-      build: () => TrendMoviesBloc(trendsService),
+      build: () => TrendMoviesBloc(trendsRepository),
       seed: () => const TrendMoviesState(trendMovies: [Trend()]),
       act: (bloc) => bloc.add(TrendMoviesFetched()),
       expect: () => <TrendMoviesState>[
@@ -66,28 +61,9 @@ void main() async {
     blocTest<TrendMoviesBloc, TrendMoviesState>(
       'emits max limit reached when gets empty data',
       setUp: () async {
-        final httpClient = MockClient((request) async {
-          return http.Response(
-            '''
-            {
-              "page": 1,
-              "results": [],
-              "total_pages": 1000,
-              "total_results": 20000
-              }
-            ''',
-            200,
-          );
-        });
-        chopperClient = ChopperClientBuilder.buildChopperClient(
-          [
-            TrendsService.create(),
-          ],
-          baseUrl: '',
-          httpClient: httpClient,
-        );
+        when(() => trendsRepository.fetchTrendMovies(page: 1)).thenAnswer((_) => Future.value(<Trend>[]));
       },
-      build: () => TrendMoviesBloc(TrendsService.create(chopperClient)),
+      build: () => TrendMoviesBloc(trendsRepository),
       act: (bloc) => bloc.add(TrendMoviesFetched()),
       expect: () => <TrendMoviesState>[
         const TrendMoviesState(
@@ -99,32 +75,10 @@ void main() async {
     blocTest<TrendMoviesBloc, TrendMoviesState>(
       'emits data fetched and increases page number',
       setUp: () async {
-        final httpClient = MockClient((request) async {
-          return http.Response(
-            '''
-            {
-              "page": 1,
-              "results": [
-                {
-                  "media_type": "movie"
-                }
-              ],
-              "total_pages": 1000,
-              "total_results": 20000
-              }
-            ''',
-            200,
-          );
-        });
-        chopperClient = ChopperClientBuilder.buildChopperClient(
-          [
-            TrendsService.create(),
-          ],
-          baseUrl: '',
-          httpClient: httpClient,
-        );
+        when(() => trendsRepository.fetchTrendMovies(page: 1))
+            .thenAnswer((_) => Future.value(const [Trend(mediaType: 'movie')]));
       },
-      build: () => TrendMoviesBloc(TrendsService.create(chopperClient)),
+      build: () => TrendMoviesBloc(trendsRepository),
       act: (bloc) => bloc.add(TrendMoviesFetched()),
       expect: () => <TrendMoviesState>[
         const TrendMoviesState(

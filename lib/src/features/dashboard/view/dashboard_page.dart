@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieetlite/src/features/dashboard/cubit/dashboard_cubit.dart';
 import 'package:movieetlite/src/features/profile/presentation/profile/view/profile_page.dart';
 import 'package:movieetlite/src/features/search/presentation/search/view/search_page.dart';
-import 'package:movieetlite/src/features/trends/data/trends_service.dart';
+import 'package:movieetlite/src/features/trends/data/service/trends_service.dart';
 import 'package:movieetlite/src/features/trends/presentation/trends/trends.dart';
 
 class DashboardPage extends StatelessWidget {
