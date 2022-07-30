@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieetlite/src/core/extensions/context_extension.dart';
+import 'package:movieetlite/src/core/widgets/other/centered_progress_indicator.dart';
 import 'package:movieetlite/src/features/trends/data/repository/trends_repository.dart';
 import 'package:movieetlite/src/features/trends/data/service/trends_service.dart';
-import 'package:movieetlite/src/features/trends/presentation/trend_movies/trend_movies.dart';
-import 'package:movieetlite/src/features/trends/presentation/trend_series/trend_series.dart';
-import 'package:movieetlite/src/features/trends/presentation/trends/cubit/trends_cubit.dart';
-import 'package:movieetlite/src/features/trends/presentation/trends/trends.dart';
+import 'package:movieetlite/src/features/trends/presentation/trends/bloc/trends_bloc.dart';
+import 'package:movieetlite/src/features/trends/presentation/trends/view/trend_list.dart';
 
 class TrendsPage extends StatelessWidget {
   const TrendsPage(this._trendsService, {super.key});
@@ -17,9 +16,9 @@ class TrendsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => TrendsCubit()),
-        BlocProvider(create: (context) => TrendMoviesBloc(TrendsRepository(_trendsService))..add(TrendMoviesFetched())),
-        BlocProvider(create: (context) => TrendSeriesBloc(TrendsRepository(_trendsService))),
+        BlocProvider(
+          create: (context) => TrendsBloc(TrendsRepository(_trendsService))..add(TrendMoviesFetched()),
+        ),
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -30,30 +29,48 @@ class TrendsPage extends StatelessWidget {
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: BlocBuilder<TrendsCubit, TrendsState>(
+        body: BlocBuilder<TrendsBloc, TrendsState>(
+          buildWhen: (previous, current) => current.trendsTab != previous.trendsTab,
           builder: (context, state) {
             return Column(
               children: [
                 Row(
                   children: [
                     CategoryNameButton(
-                      isSelected: state == TrendsState.movies,
+                      isSelected: state.trendsTab == TrendsTab.movies,
                       text: 'Movies',
-                      onTap: () => context.read<TrendsCubit>().changeTrendsState(TrendsState.movies),
+                      onTap: () => context.read<TrendsBloc>().add(TrendMoviesTabViewed()),
                     ),
                     CategoryNameButton(
-                      isSelected: state == TrendsState.serries,
+                      isSelected: state.trendsTab == TrendsTab.series,
                       text: 'Series',
                       onTap: () {
-                        context.read<TrendsCubit>().changeTrendsState(TrendsState.serries);
-                        final trendSeriesBloc = context.read<TrendSeriesBloc>();
-                        if (trendSeriesBloc.state.trendSeries.isEmpty) trendSeriesBloc.add(TrendSeriesFetched());
+                        final trendSeriesBloc = context.read<TrendsBloc>()..add(TrendSeriesTabViewed());
+                        if (state.trendSeries.isEmpty) trendSeriesBloc.add(TrendSeriesFetched());
                       },
                     ),
                   ],
                 ),
                 SizedBox(height: context.normalPadding),
-                Expanded(child: state == TrendsState.movies ? const TrendMoviesList() : const TrendSeriesList()),
+                Expanded(
+                  child: BlocBuilder<TrendsBloc, TrendsState>(
+                    buildWhen: (previous, current) =>
+                        current.trendsTab != previous.trendsTab ||
+                        (current.trendsTab == TrendsTab.movies
+                            ? current.moviesStatus != previous.moviesStatus
+                            : current.seriesStatus != previous.seriesStatus),
+                    builder: (context, state) {
+                      if (state.trendsTab == TrendsTab.movies
+                          ? state.moviesStatus == TrendsStatus.initial
+                          : state.seriesStatus == TrendsStatus.initial) {
+                        return const CenteredProgressIndicator();
+                      }
+                      return TrendTab(
+                        key: Key(state.trendsTab == TrendsTab.movies ? 'trend-movie-tab' : 'trend-series-tab'),
+                      );
+                    },
+                  ),
+                ),
               ],
             );
           },
@@ -64,15 +81,15 @@ class TrendsPage extends StatelessWidget {
 }
 
 class CategoryNameButton extends StatelessWidget {
-  final bool isSelected;
-  final String text;
-  final VoidCallback onTap;
   const CategoryNameButton({
-    Key? key,
+    super.key,
     required this.isSelected,
     required this.text,
     required this.onTap,
-  }) : super(key: key);
+  });
+  final bool isSelected;
+  final String text;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -88,11 +105,57 @@ class CategoryNameButton extends StatelessWidget {
             ),
             DecoratedBox(
               decoration: BoxDecoration(color: isSelected ? Colors.black : Colors.transparent),
-              child: SizedBox(height: 1),
+              child: const SizedBox(height: 1),
             )
           ],
         ),
       ),
+    );
+  }
+}
+
+class TrendTab extends StatelessWidget {
+  const TrendTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: BlocBuilder<TrendsBloc, TrendsState>(
+            buildWhen: (previous, current) =>
+                current.trendsTab != previous.trendsTab ||
+                (current.trendsTab == TrendsTab.movies
+                    ? current.trendMovies != previous.trendMovies
+                    : current.trendSeries != previous.trendSeries),
+            builder: (context, state) {
+              return TrendList(
+                key: Key(state.trendsTab == TrendsTab.movies ? 'trend-movie-list' : 'trend-series-list'),
+                trendList: state.trendsTab == TrendsTab.movies ? state.trendMovies : state.trendSeries,
+                onBottom: () => context
+                    .read<TrendsBloc>()
+                    .add(state.trendsTab == TrendsTab.movies ? TrendMoviesFetched() : TrendSeriesFetched()),
+              );
+            },
+          ),
+        ),
+        BlocBuilder<TrendsBloc, TrendsState>(
+          buildWhen: (previous, current) => current.trendsTab == TrendsTab.movies
+              ? current.moviesStatus != previous.moviesStatus
+              : current.seriesStatus != previous.seriesStatus,
+          builder: (context, state) {
+            if (state.trendsTab == TrendsTab.movies
+                ? state.moviesStatus != TrendsStatus.loading
+                : state.seriesStatus != TrendsStatus.loading) {
+              return const SizedBox();
+            }
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: context.highPadding),
+              child: const CircularProgressIndicator(key: Key('bottomLoader')),
+            );
+          },
+        ),
+      ],
     );
   }
 }

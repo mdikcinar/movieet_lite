@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieetlite/src/features/trends/domain/trend.dart';
+import 'package:movieetlite/src/features/trends/presentation/trends/bloc/trends_bloc.dart';
 import 'package:movieetlite/src/utils/widgets/trend_card.dart';
 
 class TrendList extends StatefulWidget {
@@ -11,18 +13,23 @@ class TrendList extends StatefulWidget {
 }
 
 class _TrendListState extends State<TrendList> {
-  final _scrollController = ScrollController();
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
+    final state = context.read<TrendsBloc>().state;
+    final currentPosition = state.trendsTab == TrendsTab.movies
+        ? context.read<TrendsBloc>().movieListScrollPosition
+        : context.read<TrendsBloc>().seriesListScrollPosition;
+    _scrollController = ScrollController(initialScrollOffset: currentPosition);
+    _scrollController.addListener(() => _onScroll(context));
   }
 
   @override
   void dispose() {
     _scrollController
-      ..removeListener(_onScroll)
+      ..removeListener(() => _onScroll(context))
       ..dispose();
     super.dispose();
   }
@@ -42,14 +49,18 @@ class _TrendListState extends State<TrendList> {
     );
   }
 
-  void _onScroll() {
-    if (_isBottom) widget.onBottom();
+  void _onScroll(BuildContext context) {
+    if (_isBottom(context)) widget.onBottom();
   }
 
-  bool get _isBottom {
+  bool _isBottom(BuildContext context) {
     if (!_scrollController.hasClients) return false;
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.offset;
+    final state = context.read<TrendsBloc>().state;
+    state.trendsTab == TrendsTab.movies
+        ? context.read<TrendsBloc>().movieListScrollPosition = currentScroll
+        : context.read<TrendsBloc>().seriesListScrollPosition = currentScroll;
     return currentScroll >= (maxScroll * 0.9);
   }
 }
