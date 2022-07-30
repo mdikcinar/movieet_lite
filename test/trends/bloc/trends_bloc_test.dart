@@ -27,6 +27,10 @@ void main() async {
     test('initial state is TrendsState', () {
       expect(TrendsBloc(trendsRepository).state, const TrendsState());
     });
+    test('initial scroll positions is 0', () {
+      expect(TrendsBloc(trendsRepository).movieListScrollPosition, 0);
+      expect(TrendsBloc(trendsRepository).seriesListScrollPosition, 0);
+    });
     blocTest<TrendsBloc, TrendsState>(
       'emits Trends movies tab viewed',
       build: () => TrendsBloc(trendsRepository),

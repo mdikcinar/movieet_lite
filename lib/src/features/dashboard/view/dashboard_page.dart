@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieetlite/src/features/dashboard/cubit/dashboard_cubit.dart';
 import 'package:movieetlite/src/features/profile/presentation/profile/view/profile_page.dart';
 import 'package:movieetlite/src/features/search/presentation/search/view/search_page.dart';
+import 'package:movieetlite/src/features/trends/data/repository/trends_repository.dart';
 import 'package:movieetlite/src/features/trends/data/service/trends_service.dart';
+import 'package:movieetlite/src/features/trends/presentation/trends/bloc/trends_bloc.dart';
 import 'package:movieetlite/src/features/trends/presentation/trends/trends.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -12,6 +14,7 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final trendsRepository = TrendsRepository(context.read<ChopperClient>().getService<TrendsService>());
     return BlocProvider<DashboardCubit>(
       create: (context) => DashboardCubit(),
       child: Scaffold(
@@ -20,7 +23,7 @@ class DashboardPage extends StatelessWidget {
           builder: (context, state) {
             switch (state) {
               case DashboardView.trends:
-                return TrendsPage(context.read<ChopperClient>().getService<TrendsService>());
+                return TrendsPage(TrendsBloc(trendsRepository));
               case DashboardView.search:
                 return const SearchPage();
               case DashboardView.profile:

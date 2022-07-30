@@ -2,24 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieetlite/src/core/extensions/context_extension.dart';
 import 'package:movieetlite/src/core/widgets/other/centered_progress_indicator.dart';
-import 'package:movieetlite/src/features/trends/data/repository/trends_repository.dart';
-import 'package:movieetlite/src/features/trends/data/service/trends_service.dart';
 import 'package:movieetlite/src/features/trends/presentation/trends/bloc/trends_bloc.dart';
 import 'package:movieetlite/src/features/trends/presentation/trends/view/trend_list.dart';
 
 class TrendsPage extends StatelessWidget {
-  const TrendsPage(this._trendsService, {super.key});
-
-  final TrendsService _trendsService;
+  const TrendsPage(this.trendsBloc, {super.key});
+  final TrendsBloc trendsBloc;
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => TrendsBloc(TrendsRepository(_trendsService))..add(TrendMoviesFetched()),
-        ),
-      ],
+    return BlocProvider<TrendsBloc>(
+      create: (context) => trendsBloc..add(TrendMoviesFetched()),
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -37,11 +30,13 @@ class TrendsPage extends StatelessWidget {
                 Row(
                   children: [
                     CategoryNameButton(
+                      key: const Key('movies-tab-button'),
                       isSelected: state.trendsTab == TrendsTab.movies,
                       text: 'Movies',
                       onTap: () => context.read<TrendsBloc>().add(TrendMoviesTabViewed()),
                     ),
                     CategoryNameButton(
+                      key: const Key('series-tab-button'),
                       isSelected: state.trendsTab == TrendsTab.series,
                       text: 'Series',
                       onTap: () {
@@ -151,7 +146,7 @@ class TrendTab extends StatelessWidget {
             }
             return Padding(
               padding: EdgeInsets.symmetric(vertical: context.highPadding),
-              child: const CircularProgressIndicator(key: Key('bottomLoader')),
+              child: const CircularProgressIndicator(key: Key('bottom-loader')),
             );
           },
         ),
