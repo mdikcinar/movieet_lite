@@ -130,6 +130,14 @@ class TrendTab extends StatelessWidget {
                 onBottom: () => context
                     .read<TrendsBloc>()
                     .add(state.trendsTab == TrendsTab.movies ? TrendMoviesFetched() : TrendSeriesFetched()),
+                initialScroll: state.trendsTab == TrendsTab.movies
+                    ? context.read<TrendsBloc>().movieListScrollPosition
+                    : context.read<TrendsBloc>().seriesListScrollPosition,
+                onScroll: (position) {
+                  state.trendsTab == TrendsTab.movies
+                      ? context.read<TrendsBloc>().movieListScrollPosition = position
+                      : context.read<TrendsBloc>().seriesListScrollPosition = position;
+                },
               );
             },
           ),
